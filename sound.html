@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
+        integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+    <style>
+        body {
+            background-color: #DDDDDD;
+            font-family: YuGothicM, Meiryo;
+        }
+
+        button {
+            vertical-align: middle;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+
+        .video-table {
+            width: 100%;
+            text-align: center;
+        }
+
+        .input-range[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            background-color: #c7c7c7;
+            height: 2px;
+            vertical-align: middle;
+        }
+
+        .input-range {
+            cursor: pointer;
+            width: 100px;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+
+        .input-range[type="range"]:focus {
+            outline: none;
+        }
+
+        .input-range[type="range"]:active {
+            outline: none;
+        }
+
+        .input-range[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            position: relative;
+            border: none;
+            width: 12px;
+            height: 12px;
+            display: block;
+            background-color: #262626;
+            border-radius: 50%;
+            -webkit-border-radius: 50%;
+        }
+
+        .input-range[type="range"]:active::-webkit-slider-thumb {
+            box-shadow: 0 0 0 4px rgba(255, 255, 255, .6);
+            transition: .4s;
+        }
+    </style>
+    <script type="text/javascript">
+        'use strict';
+
+        class SoundPlayer {
+
+            audioElement = new Audio();
+
+            constructor() {
+                this.audioElement.src = "sound.mp3";
+                this.audioElement.addEventListener("loadedmetadata", () => {
+                    this.init();
+                });
+
+                console.log("constructor", this.audioElement);
+            }
+
+            init() {
+                console.log("input");
+
+                document.getElementById("videoPlay").onpointerdown = () => {
+                    soundObject.ClickPlayButton();
+                }
+
+                const seekbar = document.getElementById("videoSeekbar");
+                seekbar.max = this.audioElement.duration;
+
+                seekbar.oninput = () => {
+                    const seekbarValue = document.getElementById("videoSeekbar").value;
+                    this.audioElement.currentTime = seekbarValue;
+                    document.getElementById("currentTimeDisplayer").innerHTML = Timecode2HMS(Math.floor(seekbarValue)).slice(3);
+                };
+
+
+                const endTimeDisplayer = document.getElementById("endTimeDisplayer");
+                const videoDuration = this.audioElement.duration;
+                endTimeDisplayer.innerHTML = Timecode2HMS(Math.floor(videoDuration)).slice(3);
+
+
+                const currentTimeDisplayer = document.getElementById("currentTimeDisplayer");
+                currentTimeDisplayer.innerHTML = Timecode2HMS(0).slice(3);
+
+                this.audioElement.ontimeupdate = () => {
+                    const currentTime = this.audioElement.currentTime;
+                    const videoTimeHMS = Timecode2HMS(Math.floor(currentTime)).slice(3);
+                    const currentTimeDisplayer = document.getElementById("currentTimeDisplayer");
+
+                    document.getElementById("videoSeekbar").value = currentTime; // CreateSeekbarで循環しそう
+                    currentTimeDisplayer.innerHTML = videoTimeHMS;
+                    currentTimeDisplayer.value = currentTime;
+                    // if (document.hasFocus())
+                    //     document.title = "VideoNote";
+                    // else // 非フォーカス時はタイトルを動画情報に変更
+                    //     document.title = _videoObjectList[_nowVideoIndex].name.slice(0, 4) + "[" + videoTimeHMS + "]";
+                };
+
+
+
+                const soundbar = document.getElementById("soundController");
+                soundbar.oninput = () => {
+                    this.audioElement.volume = document.getElementById("soundController").value;
+                };
+            }
+
+            PlaySound() {
+                console.log("play", this.audioElement);
+                this.audioElement.play();
+            }
+            StopSound() {
+                console.log("stop", this.audioElement);
+                this.audioElement.pause();
+            }
+            ClickPlayButton() {
+                const icon = document.getElementById("videoPlayIcon");
+                if (this.audioElement.paused) {
+                    this.audioElement.play();
+                    if (icon.classList.contains("fa-play"))
+                        icon.classList.remove("fa-play");
+                    icon.classList.add("fa-pause");
+                } else {
+                    this.audioElement.pause();
+                    if (icon.classList.contains("fa-pause"))
+                        icon.classList.remove("fa-pause");
+                    icon.classList.add("fa-play");
+                }
+            }
+            ChangeSoundVolume() {
+                this.audioElement.volume = document.getElementById("sound-controller").value;
+            }
+        }
+
+        /**
+         * 秒を時分秒に修正
+         * @param {String} 時分秒の文字列 
+         */
+        function Timecode2HMS(timeCode) {
+            let hms = "";
+            const h = timeCode / 3600 | 0;
+            const m = timeCode % 3600 / 60 | 0;
+            const s = parseInt(timeCode) % 60;
+
+            if (h != 0)
+                hms = ZeroPadding(h) + "：" + ZeroPadding(m) + "：" + ZeroPadding(s);
+            else if (m != 0)
+                hms = "00：" + ZeroPadding(m) + "：" + ZeroPadding(s);
+            else
+                hms = "00：00：" + ZeroPadding(s);
+            return hms;
+        }
+        /**
+ * 映像時間の0埋め
+ * @param {String} timeCode 
+ */
+        function ZeroPadding(timeCode) {
+            if (timeCode < 10) return "0" + timeCode;
+            else return timeCode;
+        }
+    </script>
+</head>
+
+<body>
+
+
+    <div class="container">
+        <div class="row">
+            <div id="videoArea" class="col">
+                <table class="videoTable" width="100%">
+                    <tbody id="videoTbody">
+                        <tr>
+                            <td colspan="3">
+                                test
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3">
+                                <input id="videoSeekbar" type="range" class="input-range" style="width: 100%;" value="0"
+                                    min="0">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:33%">
+                                <button id="videoPlay" class="btn btn-dark" style="margin-right: 10px;">
+                                    <i id="videoPlayIcon" class="fas fa-play"></i>
+                                </button>
+                                <!-- <div style="display: inline-block;">
+                            <i class="fa fa-fast-backward" title="再生速度を変更する"></i><input id="speed-controller"
+                                type="range" class="input-range" min="0.5" max="1.5" step="0.5" title="再生速度を変更する"
+                                style="margin: 0px 10px;"><i class="fa fa-fast-forward" title="再生速度を変更する"></i>
+                        </div> -->
+                            </td>
+                            <td style="width:33%; text-align:center">
+                                <!-- <button id="videoBack" class="btn btn-dark" title="前の映像に戻る"><i id="video-play-icon"
+                                class="fas fa-step-backward"></i>
+                        </button> -->
+                                <div style="display: inline-block;">
+                                    <div id="currentTimeDisplayer" style="display: inline-block;">00：00</div>
+                                    <span>/</span><span id="endTimeDisplayer">00：00</span>
+                                </div>
+                                <!-- <button id="videoNext" class="btn btn-dark" title="次の映像へ進む"><i id="video-play-icon"
+                                class="fas fa-step-forward"></i>
+                        </button> -->
+                            </td>
+                            <td style="width:33%; text-align:right">
+                                <div style="display: inline-block;"><i class="fa fa-volume-down"
+                                        style="cursor: pointer;"></i><input id="soundController" type="range"
+                                        class="input-range" min="0" max="1" step="0.01"><i class="fa fa-volume-up"
+                                        style="cursor: pointer;"></i></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script>
+        var soundObject = new SoundPlayer();
+    </script>
+</body>
+
+</html>
