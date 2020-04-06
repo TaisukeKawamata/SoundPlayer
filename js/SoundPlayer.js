@@ -10,7 +10,7 @@ class SoundPlayer {
      */
     constructor(url) {
         this.audioElement.src = url;
-        
+
         /* 音声データのメタデータロード完了時に起動 */
         this.audioElement.addEventListener("loadedmetadata", () => {
             this.init(); // 初期化
@@ -24,12 +24,32 @@ class SoundPlayer {
 
         this.PlaySoundInitializer();
         this.SeekbarInitializer();
+        this.TimeDisplayInitializer();
+        this.SoundInitializer();
+    }
 
+    PlaySoundInitializer() {
+        document.getElementById("videoPlay").onpointerdown = () => {
+            soundObject.ClickPlayButton();
+        }
+    }
 
-        const endTimeDisplayer = document.getElementById("endTimeDisplayer");
-        const videoDuration = this.audioElement.duration;
-        endTimeDisplayer.innerHTML = Timecode2HMS(Math.floor(videoDuration)).slice(3);
+    SeekbarInitializer() {
+        const seekbar = document.getElementById("videoSeekbar");
+        seekbar.max = this.audioElement.duration;
 
+        seekbar.oninput = () => {
+            const seekbarValue = document.getElementById("videoSeekbar").value;
+            this.audioElement.currentTime = seekbarValue;
+            document.getElementById("currentTimeDisplayer").innerHTML = Timecode2HMS(Math.floor(seekbarValue)).slice(3);
+        };
+    }
+
+    TimeDisplayInitializer() {
+        /* スマホだと表示が難しくなるため動画長は決め打ちにして動画の長さ表示を削除 */
+        // const endTimeDisplayer = document.getElementById("endTimeDisplayer");
+        // const videoDuration = this.audioElement.duration;
+        // endTimeDisplayer.innerHTML = Timecode2HMS(Math.floor(videoDuration)).slice(3);
 
         const currentTimeDisplayer = document.getElementById("currentTimeDisplayer");
         currentTimeDisplayer.innerHTML = Timecode2HMS(0).slice(3);
@@ -47,39 +67,18 @@ class SoundPlayer {
             // else // 非フォーカス時はタイトルを動画情報に変更
             //     document.title = _videoObjectList[_nowVideoIndex].name.slice(0, 4) + "[" + videoTimeHMS + "]";
         };
-
-
-
+    }
+    SoundInitializer() {
         const soundbar = document.getElementById("soundController");
         soundbar.oninput = () => {
             this.audioElement.volume = document.getElementById("soundController").value;
         };
     }
 
-    PlaySoundInitializer() {
-        document.getElementById("videoPlay").onpointerdown = () => {
-            soundObject.ClickPlayButton();
-        }
-    }
-
-    SeekbarInitializer(){
-        const seekbar = document.getElementById("videoSeekbar");
-        seekbar.max = this.audioElement.duration;
-
-        seekbar.oninput = () => {
-            const seekbarValue = document.getElementById("videoSeekbar").value;
-            this.audioElement.currentTime = seekbarValue;
-            document.getElementById("currentTimeDisplayer").innerHTML = Timecode2HMS(Math.floor(seekbarValue)).slice(3);
-        };
-
-    }
-
     PlaySound() {
-        console.log("play", this.audioElement);
         this.audioElement.play();
     }
     StopSound() {
-        console.log("stop", this.audioElement);
         this.audioElement.pause();
     }
     ClickPlayButton() {

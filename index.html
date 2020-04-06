@@ -15,7 +15,6 @@
 
 <body>
 
-
     <div class="container">
         <div class="row">
             <div id="videoArea" class="col">
@@ -32,7 +31,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td style="width:33%">
+                            <td style="text-align:left">
                                 <button id="videoPlay" class="btn btn-dark" style="margin-right: 10px;">
                                     <i id="videoPlayIcon" class="fas fa-play"></i>
                                 </button>
@@ -42,23 +41,29 @@
                                 style="margin: 0px 10px;"><i class="fa fa-fast-forward" title="再生速度を変更する"></i>
                         </div> -->
                             </td>
-                            <td style="width:33%; text-align:center">
+                            <td style="text-align:center">
                                 <!-- <button id="videoBack" class="btn btn-dark" title="前の映像に戻る"><i id="video-play-icon"
                                 class="fas fa-step-backward"></i>
                         </button> -->
                                 <div style="display: inline-block;">
                                     <div id="currentTimeDisplayer" style="display: inline-block;">00：00</div>
-                                    <span>/</span><span id="endTimeDisplayer">00：00</span>
+                                    <!-- <span>/</span>
+                                    <span id="endTimeDisplayer">00：00</span> -->
                                 </div>
                                 <!-- <button id="videoNext" class="btn btn-dark" title="次の映像へ進む"><i id="video-play-icon"
                                 class="fas fa-step-forward"></i>
                         </button> -->
                             </td>
-                            <td style="width:33%; text-align:right">
-                                <div style="display: inline-block;"><i class="fa fa-volume-down"
-                                        style="cursor: pointer;"></i><input id="soundController" type="range"
-                                        class="input-range" min="0" max="1" step="0.01"><i class="fa fa-volume-up"
-                                        style="cursor: pointer;"></i></div>
+                            <td style="text-align:right">
+                                <div style="display: inline-block;">
+                                    <!-- <i class="fa fa-volume-down" style="cursor: pointer;"></i>
+                                    <input id="soundController" type="range" class="input-range" min="0" max="1"
+                                        step="0.01">
+                                    <i class="fa fa-volume-up" style="cursor: pointer;"></i> -->
+                                    <i class="fa fa-volume-up" style="cursor: pointer;"></i>
+                                    <input id="soundController" type="range" class="input-range" min="0" max="1"
+                                        step="0.01">
+                                </div>
                             </td>
                         </tr>
                     </tbody>
@@ -69,8 +74,8 @@
     <script>
         const soundObject = new SoundPlayer("./sound/sound.mp3");
     </script>
-    
-  </div>
+
+    </div>
 </body>
 
 </html>
