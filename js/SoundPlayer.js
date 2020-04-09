@@ -46,6 +46,7 @@ class SoundPlayer {
     }
 
     TimeDisplayInitializer() {
+        
         /* スマホだと表示が難しくなるため動画長は決め打ちにして動画の長さ表示を削除 */
         // const endTimeDisplayer = document.getElementById("endTimeDisplayer");
         // const videoDuration = this.audioElement.duration;
